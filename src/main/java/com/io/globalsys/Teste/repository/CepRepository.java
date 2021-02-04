@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface CepRepository extends JpaRepository<Cep, Long> {
 
     @Query("from Cep c where c.faixaInicio =: faixaInicial and c.faixaFim =: faixaFinal")
-    public Optional<Cep> findByFaixaInicioAndFaixaFim(@Param("faixaFinal") int faixaInicial,
+    public Optional<Cep> findCepByFaixaInicioAndFaixaFim(@Param("faixaInicial") int faixaInicial,
                                                       @Param("faixaFinal") int faixaFinal);
 }

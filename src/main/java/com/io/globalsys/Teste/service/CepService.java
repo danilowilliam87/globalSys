@@ -4,11 +4,14 @@ import com.io.globalsys.Teste.CepRn;
 import com.io.globalsys.Teste.model.Cep;
 import com.io.globalsys.Teste.repository.CepRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Service
 public class CepService implements CepRn {
 
     @Autowired
@@ -18,11 +21,16 @@ public class CepService implements CepRn {
     public Cep buscaPorFaixa(Cep cep) {
         Cep r = new Cep();
         Optional<Cep> busca = repository
-                .findByFaixaInicioAndFaixaFim(cep.getFaixaInicio(), cep.getFaixaFim());
+                .findCepByFaixaInicioAndFaixaFim(cep.getFaixaInicio(), cep.getFaixaFim());
         if (busca.isPresent()){
               r =  busca.get(); 
           }
           return r;
+    }
+
+    @Override
+    public Optional<Cep> buscar(Long id) {
+        return repository.findById(id);
     }
 
     @Override

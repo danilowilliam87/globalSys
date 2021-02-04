@@ -3,19 +3,20 @@ package com.io.globalsys.Teste.model;
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity(name = "cep")
+@Entity(name = "Cep")
 public class Cep {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "codigo_loja")
+    @Column(name = "CODIGO_LOJA")
     private String codigoLoja;
 
-    @Column(name = "faixa_inicio", unique = true)
+    @Column(name = "FAIXA_INICIO", unique = true)
     private int faixaInicio;
 
-    @Column(name = "faixa_fim", unique = true)
+    @Column(name = "FAIXA_FIM", unique = true)
     private int faixaFim;
 
     public Long getId() {
