@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -19,21 +20,76 @@ public class CepController {
     @Autowired
     private CepService service;
 
-    @Autowired
-    private CepRepository repository;
+
 
     @ResponseBody
     @PostMapping("/salvar")
     public Cep salvar(@RequestBody  Cep cep){
-        return service.salvar(cep);
+        Cep busca = buscaPorFaixa(cep);
+        if (service.validar(cep)) {
+            return service.salvar(cep);
+        }else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Faixa de Valores já em uso");
+        }
     }
 
     @ResponseBody
-    @GetMapping("/busca")
+    @GetMapping("/busca/{id}")
     public Cep busca(@PathVariable Long id){
         return service.buscar(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Loja não localizada"));
 
+    }
+
+    @GetMapping("/")
+    public String ola(){
+        return "ola";
+    }
+
+    @GetMapping("/busca_faixa")
+    @ResponseBody
+    public Cep buscaPorFaixa(@RequestBody Cep cep){
+        Cep cep1 = new Cep();
+        cep1.setFaixaInicio(cep.getFaixaInicio());
+        cep1.setFaixaFim(cep.getFaixaFim());
+
+        return service.buscaPorFaixa(cep);
+    }
+
+    @GetMapping("/lista")
+    @ResponseBody
+    public List<Cep> listar(){
+        return service.listar();
+
+    }
+
+    @PutMapping("/atualizar/{id}")
+    @ResponseBody
+    public void atualizar(@RequestBody Cep atualizado , @PathVariable(name = "id") Long id){
+        Optional<Cep> busca = service.buscar(id);
+        if(busca.isPresent()){
+            if(service.validarAtualizacao(busca.get(), atualizado))
+                service.atualizar(atualizado, id);
+            else if (service.validar(atualizado)){
+                service.atualizar(atualizado, id);
+            }  else {
+                throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"Impossível atualizar");
+            }
+        }
+        else{
+            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"Loja/Cep não localizado");
+        }
+    }
+
+    @DeleteMapping("/deletar/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable  Long id){
+        Optional<Cep> busca = service.buscar(id);
+        if (busca.isPresent())
+            service.excluir(id);
+        else {
+            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"Loja/Cep não localizado");
+        }
     }
 
 }

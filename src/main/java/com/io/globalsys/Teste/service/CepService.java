@@ -5,11 +5,9 @@ import com.io.globalsys.Teste.model.Cep;
 import com.io.globalsys.Teste.repository.CepRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class CepService implements CepRn {
@@ -21,7 +19,7 @@ public class CepService implements CepRn {
     public Cep buscaPorFaixa(Cep cep) {
         Cep r = new Cep();
         Optional<Cep> busca = repository
-                .findCepByFaixaInicioAndFaixaFim(cep.getFaixaInicio(), cep.getFaixaFim());
+                .buscarPelaFaixa(cep.getFaixaInicio(), cep.getFaixaFim());
         if (busca.isPresent()){
               r =  busca.get(); 
           }
@@ -39,7 +37,7 @@ public class CepService implements CepRn {
     }
 
     @Override
-    public void atualizar(Cep cep, Long id) {
+    public Cep atualizar(Cep cep, Long id) {
         Optional<Cep> busca = repository.findById(id);
         Cep retorno = new Cep();
         if (busca.isPresent()){
@@ -49,7 +47,7 @@ public class CepService implements CepRn {
             retorno.setFaixaInicio(cep.getFaixaInicio());
             retorno.setFaixaFim(cep.getFaixaFim());
         }
-        repository.save(retorno);
+       return  repository.save(retorno);
     }
 
     @Override
@@ -64,13 +62,15 @@ public class CepService implements CepRn {
     }
 
     @Override
-    public AtomicBoolean verificarFaixaLivre(Cep cep) {
-        AtomicBoolean ok = new AtomicBoolean(false);
-        repository.findAll()
-                .forEach(cep1 -> {
-                    ok.set(!(cep.getFaixaInicio() >= cep1.getFaixaInicio()
-                            && cep.getFaixaFim() <= cep1.getFaixaFim()));
-                });
+    public boolean verificarFaixaLivre(Cep cep) {
+        boolean ok = true;
+        List<Cep>lista = repository.findAll();
+        for(Cep c  : lista){
+            if (cep.getFaixaInicio() >= c.getFaixaInicio() && cep.getFaixaFim() <= c.getFaixaFim()){
+                ok = false;
+                break;
+            }
+        }
         return ok;
     }
 
@@ -80,4 +80,18 @@ public class CepService implements CepRn {
     }
 
 
+    //método responsável por validar se a faixa está livre ou não.
+    public boolean validar(Cep cep){
+        boolean valid1 = verificarFaixaDoObjeto(cep);
+        Cep busca = buscaPorFaixa(cep);
+        boolean valid3 = verificarFaixaLivre(cep);
+
+        return valid1 && valid3 && busca.getCodigoLoja() == null;
+
+    }
+
+
+    public boolean validarAtualizacao(Cep cep, Cep atualizar){
+       return atualizar.getFaixaInicio() >= cep.getFaixaInicio() && atualizar.getFaixaFim() <= cep.getFaixaFim();
+    }
 }

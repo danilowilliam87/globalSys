@@ -1,6 +1,7 @@
 package com.io.globalsys.Teste.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Entity(name = "Cep")
@@ -10,12 +11,15 @@ public class Cep {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "CODIGO_LOJA")
+    @Column(name = "CODIGO_LOJA", unique = true)
+    @NotBlank(message = "{campo.codigoLoja.invalido}")
     private String codigoLoja;
 
+    @NotBlank(message = "{campo.faixaInicio.valido}")
     @Column(name = "FAIXA_INICIO", unique = true)
     private int faixaInicio;
 
+    @NotBlank(message = "{campo.faixaFim.valido}")
     @Column(name = "FAIXA_FIM", unique = true)
     private int faixaFim;
 
