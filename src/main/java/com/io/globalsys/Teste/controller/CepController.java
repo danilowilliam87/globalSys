@@ -29,7 +29,7 @@ public class CepController {
         if (service.validar(cep)) {
             return service.salvar(cep);
         }else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Faixa de Valores já em uso");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"\nInforme dados válidos");
         }
     }
 
@@ -37,7 +37,7 @@ public class CepController {
     @GetMapping("/busca/{id}")
     public Cep busca(@PathVariable Long id){
         return service.buscar(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Loja não localizada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"\nLoja não localizada"));
 
     }
 
@@ -73,11 +73,11 @@ public class CepController {
             else if (service.validar(atualizado)){
                 service.atualizar(atualizado, id);
             }  else {
-                throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"Impossível atualizar");
+                throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"\nImpossível atualizar");
             }
         }
         else{
-            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"Loja/Cep não localizado");
+            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"\nLoja/Cep não localizado");
         }
     }
 
@@ -88,7 +88,7 @@ public class CepController {
         if (busca.isPresent())
             service.excluir(id);
         else {
-            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"Loja/Cep não localizado");
+            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"\nLoja/Cep não localizado");
         }
     }
 
